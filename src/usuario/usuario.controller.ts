@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { UsuarioRepository } from './usuario.repository';
 import { CriaUsuarioDto } from './dto/criaUsuario.dto';
+import { UsuarioEntity } from './usuario.entity';
+import { v4 as uuid } from 'uuid';
+import { ListaUsuarioDto } from './dto/ListaUsuario.dto';
+import { AtualizaUsuarioDto } from './dto/AtualizaUsuario.dto';
 
 @Controller('/usuarios')
 export class UsuarioController {
@@ -9,12 +13,41 @@ export class UsuarioController {
 
   @Post()
   async criaUsuario(@Body() dadosDoUsuario: CriaUsuarioDto) {
-    this.UsuarioRepository.salvar(dadosDoUsuario);
-    return dadosDoUsuario;
+    const usuarioEntity = new UsuarioEntity();
+    usuarioEntity.email = dadosDoUsuario.email;
+    usuarioEntity.senha = dadosDoUsuario.senha;
+    usuarioEntity.nome = dadosDoUsuario.nome;
+    usuarioEntity.id = uuid();
+
+    this.UsuarioRepository.salvar(usuarioEntity);
+
+    return {
+      usuario: new ListaUsuarioDto(usuarioEntity.id, usuarioEntity.nome),
+      message: 'Usuário criado com sucesso',
+    };
+  }
+
+  @Put('/:id')
+  async atualizaUsuario(
+    @Param('id') id: string,
+    @Body() dadosParaAtualizar: AtualizaUsuarioDto,
+  ) {
+    const usuarioAtualizado = await this.UsuarioRepository.atualiza(
+      id,
+      dadosParaAtualizar,
+    );
+    return {
+      usuario: usuarioAtualizado,
+      message: 'Usuário atualizado com sucesso',
+    };
   }
 
   @Get()
   async listUsuarios() {
-    return this.UsuarioRepository.listar();
+    const usuariosSalvos = await this.UsuarioRepository.listar();
+    const usuariosList = usuariosSalvos.map(
+      (usuario) => new ListaUsuarioDto(usuario.id, usuario.nome),
+    );
+    return usuariosList;
   }
 }
