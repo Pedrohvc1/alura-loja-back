@@ -12,6 +12,10 @@ export class ProdutoCaracteristicaEntity {
   @Column({ name: 'descricao', length: 255, nullable: false })
   descricao: string;
 
-  @ManyToOne(() => ProdutoEntity, (produto) => produto.caracteristicas) // ManyToOne relacionamento de muitos para um, o contrário do OneToMany no produto.entity.ts
+  @ManyToOne(() => ProdutoEntity, (produto) => produto.caracteristicas, {
+    orphanedRowAction: 'delete',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  }) // ManyToOne relacionamento de muitos para um, o contrário do OneToMany no produto.entity.ts
   produto: ProdutoEntity;
 }

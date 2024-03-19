@@ -12,6 +12,10 @@ export class ProdutoImagemEntity {
   @Column({ name: 'descricao', length: 255, nullable: false })
   descricao: string;
 
-  @ManyToOne(() => ProdutoEntity, (produto) => produto.imagens)
+  @ManyToOne(() => ProdutoEntity, (produto) => produto.imagens, {
+    orphanedRowAction: 'delete', // orphanedRowAction: 'delete' para deletar a imagem quando o produto for deletado
+    onDelete: 'CASCADE', //onDelete: 'CASCADE' para deletar a imagem quando o produto for deletado
+    onUpdate: 'CASCADE', //onUpdate: 'CASCADE' para deletar a imagem quando o produto for deletado
+  })
   produto: ProdutoEntity; // ManyToOne relacionamento de muitos para um, o contrário do OneToMany no produto.entity.ts
 }
