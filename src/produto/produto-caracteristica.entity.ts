@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ProdutoEntity } from './produto.entity';
 
 @Entity({ name: 'produto_caracteristicas' })
-export class Produto {
+export class ProdutoCaracteristicaEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -10,4 +11,7 @@ export class Produto {
 
   @Column({ name: 'descricao', length: 255, nullable: false })
   descricao: string;
+
+  @ManyToOne(() => ProdutoEntity, (produto) => produto.caracteristicas) // ManyToOne relacionamento de muitos para um, o contrário do OneToMany no produto.entity.ts
+  produto: ProdutoEntity;
 }
